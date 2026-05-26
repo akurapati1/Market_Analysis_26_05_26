@@ -1,0 +1,1254 @@
+<!DOCTYPE html>
+<!--
+  Market Briefing template.
+  Placeholders use {{DOUBLE_BRACES}} — replace them when filling in.
+  All styles are inline so the file works offline with a double-click.
+-->
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Daily Market Briefing — Monday, May 25, 2026</title>
+<style>
+  :root {
+    --bg: #0b0d12;
+    --bg-elev: #141821;
+    --bg-card: #1a1f2b;
+    --border: #2a3142;
+    --text: #e6e9ef;
+    --text-dim: #9aa3b3;
+    --text-faint: #6b7280;
+    --accent: #6ea8ff;
+    --green: #16a34a;
+    --green-bg: rgba(22, 163, 74, 0.10);
+    --green-border: rgba(22, 163, 74, 0.35);
+    --red: #dc2626;
+    --red-bg: rgba(220, 38, 38, 0.10);
+    --red-border: rgba(220, 38, 38, 0.35);
+    --amber: #d97706;
+  }
+  [data-theme="light"] {
+    --bg: #f7f8fa;
+    --bg-elev: #ffffff;
+    --bg-card: #ffffff;
+    --border: #e2e5eb;
+    --text: #1a1d24;
+    --text-dim: #4a525e;
+    --text-faint: #7a8290;
+    --accent: #2563eb;
+    --green-bg: rgba(22, 163, 74, 0.08);
+    --green-border: rgba(22, 163, 74, 0.30);
+    --red-bg: rgba(220, 38, 38, 0.08);
+    --red-border: rgba(220, 38, 38, 0.30);
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    background: var(--bg); color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-size: 15px; line-height: 1.55;
+  }
+  .container { max-width: 1200px; margin: 0 auto; padding: 24px 20px 80px; }
+
+  /* Header */
+  header.briefing {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    border-bottom: 1px solid var(--border); padding-bottom: 20px; margin-bottom: 28px;
+    gap: 20px; flex-wrap: wrap;
+  }
+  header.briefing .title h1 {
+    margin: 0 0 6px; font-size: 28px; font-weight: 700; letter-spacing: -0.01em;
+  }
+  header.briefing .title .meta { color: var(--text-dim); font-size: 13px; }
+  header.briefing .title .summary {
+    margin-top: 12px; color: var(--text-dim); font-size: 15px; max-width: 720px;
+  }
+  .theme-toggle {
+    background: var(--bg-elev); color: var(--text); border: 1px solid var(--border);
+    border-radius: 6px; padding: 8px 14px; font-size: 13px; cursor: pointer;
+  }
+  .theme-toggle:hover { border-color: var(--accent); }
+
+  /* Section headings */
+  h2.section { font-size: 20px; margin: 36px 0 16px; font-weight: 600; }
+  h3.subsection {
+    font-size: 14px; text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--text-dim); margin: 18px 0 10px; font-weight: 600;
+  }
+
+  /* Predictions section */
+  .predictions-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 18px;
+  }
+  @media (max-width: 800px) { .predictions-grid { grid-template-columns: 1fr; } }
+
+  .pred-column {
+    border: 1px solid var(--border); border-radius: 10px; padding: 18px;
+    background: var(--bg-elev);
+  }
+  .pred-column.rise { border-color: var(--green-border); background: var(--green-bg); }
+  .pred-column.fall { border-color: var(--red-border); background: var(--red-bg); }
+  .pred-column .col-header {
+    font-size: 18px; font-weight: 700; margin: 0 0 14px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .pred-column.rise .col-header { color: var(--green); }
+  .pred-column.fall .col-header { color: var(--red); }
+
+  .pick {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: 8px; padding: 12px 14px; margin-bottom: 10px;
+  }
+  .pick .pick-head {
+    display: flex; justify-content: space-between; align-items: baseline;
+    gap: 10px; margin-bottom: 6px; flex-wrap: wrap;
+  }
+  .pick .ticker {
+    font-weight: 700; font-size: 16px; font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  }
+  .pick .company { color: var(--text-dim); font-size: 13px; }
+  .pick .price { font-size: 13px; color: var(--text); }
+  .pick .change.pos { color: var(--green); font-weight: 600; }
+  .pick .change.neg { color: var(--red); font-weight: 600; }
+  .pick .score-badge {
+    display: inline-block; padding: 2px 8px; border-radius: 12px;
+    font-size: 11px; font-weight: 700; font-family: ui-monospace, monospace;
+    background: var(--bg-elev); border: 1px solid var(--border);
+  }
+  .pick .reasoning { font-size: 13.5px; color: var(--text-dim); margin-top: 8px; line-height: 1.5; }
+  .pick .geo-tag {
+    display: inline-block; font-size: 10px; padding: 1px 6px;
+    background: rgba(110, 168, 255, 0.12); color: var(--accent);
+    border: 1px solid rgba(110, 168, 255, 0.35); border-radius: 4px;
+    margin-left: 6px; font-weight: 600; vertical-align: middle;
+  }
+
+  /* Geopolitical section */
+  .geo-grid {
+    display: grid; grid-template-columns: 1fr; gap: 16px;
+  }
+  .geo-card {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-left: 4px solid var(--accent);
+    border-radius: 8px; padding: 16px 18px;
+  }
+  .geo-card .geo-theme {
+    font-size: 16px; font-weight: 700; margin: 0 0 8px;
+    color: var(--text);
+  }
+  .geo-card .geo-context {
+    font-size: 13.5px; color: var(--text-dim); margin: 0 0 12px; line-height: 1.55;
+  }
+  .geo-card .geo-split {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 10px;
+  }
+  @media (max-width: 700px) { .geo-card .geo-split { grid-template-columns: 1fr; } }
+  .geo-side {
+    border-radius: 6px; padding: 10px 12px; font-size: 13px;
+  }
+  .geo-side.winners {
+    background: var(--green-bg); border: 1px solid var(--green-border);
+  }
+  .geo-side.losers {
+    background: var(--red-bg); border: 1px solid var(--red-border);
+  }
+  .geo-side .geo-label {
+    font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em;
+    font-weight: 700; margin-bottom: 6px;
+  }
+  .geo-side.winners .geo-label { color: var(--green); }
+  .geo-side.losers .geo-label { color: var(--red); }
+  .geo-side ul { margin: 0; padding-left: 18px; }
+  .geo-side li { margin-bottom: 4px; line-height: 1.5; }
+  .geo-side .geo-ticker {
+    font-family: ui-monospace, monospace; font-weight: 600; color: var(--accent);
+  }
+  .geo-card .geo-sources {
+    margin-top: 10px; font-size: 12px; color: var(--text-faint);
+  }
+  .geo-card .geo-sources a {
+    color: var(--accent); text-decoration: none; margin-right: 10px;
+  }
+  .geo-card .geo-sources a:hover { text-decoration: underline; }
+
+  /* News cards */
+  .news-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 14px;
+  }
+  .news-card {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: 8px; padding: 14px 16px;
+  }
+  .news-card .news-head {
+    font-size: 15px; font-weight: 600; margin: 0 0 6px; line-height: 1.4;
+  }
+  .news-card .news-meta {
+    font-size: 12px; color: var(--text-faint); margin-bottom: 8px;
+    display: flex; gap: 8px; flex-wrap: wrap; align-items: center;
+  }
+  .news-card .ticker-chip {
+    font-family: ui-monospace, monospace; font-size: 11px;
+    background: var(--bg-elev); border: 1px solid var(--border);
+    padding: 1px 6px; border-radius: 4px; color: var(--accent);
+  }
+  .news-card .catalyst-chip {
+    font-size: 11px; padding: 1px 6px; border-radius: 4px;
+    background: var(--bg-elev); border: 1px solid var(--border);
+  }
+  .news-card .catalyst-chip.pos { color: var(--green); border-color: var(--green-border); }
+  .news-card .catalyst-chip.neg { color: var(--red); border-color: var(--red-border); }
+  .news-card .catalyst-chip.neu { color: var(--text-dim); }
+  .news-card p.summary { margin: 8px 0; font-size: 13.5px; color: var(--text-dim); }
+  .news-card a.source {
+    font-size: 12px; color: var(--accent); text-decoration: none;
+  }
+  .news-card a.source:hover { text-decoration: underline; }
+
+  /* Fundamentals table */
+  .table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; }
+  table.fundamentals {
+    width: 100%; border-collapse: collapse; font-size: 13px;
+    background: var(--bg-card);
+  }
+  table.fundamentals th, table.fundamentals td {
+    padding: 8px 10px; text-align: left; border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+  table.fundamentals th {
+    background: var(--bg-elev); font-weight: 600; cursor: pointer;
+    user-select: none; position: sticky; top: 0;
+  }
+  table.fundamentals th:hover { color: var(--accent); }
+  table.fundamentals th .sort-indicator { color: var(--text-faint); font-size: 10px; margin-left: 4px; }
+  table.fundamentals tbody tr:hover { background: var(--bg-elev); }
+  table.fundamentals td.num { text-align: right; font-family: ui-monospace, monospace; }
+  table.fundamentals td.ticker { font-family: ui-monospace, monospace; font-weight: 600; color: var(--accent); }
+
+  /* Footer */
+  footer.disclaimer {
+    margin-top: 50px; padding: 18px 20px; border: 1px solid var(--border);
+    border-radius: 8px; background: var(--bg-elev); color: var(--text-dim);
+    font-size: 12.5px; line-height: 1.6;
+  }
+</style>
+
+<style>
+  .geo-tag {
+    font-size: 10px; padding: 2px 7px; border-radius: 4px;
+    background: rgba(110, 168, 255, 0.15); color: var(--accent);
+    margin-left: 6px; vertical-align: middle; white-space: nowrap;
+  }
+  .radar-block {
+    margin: 24px 0; padding: 16px 20px;
+    background: var(--bg-elev); border: 1px solid var(--border); border-radius: 8px;
+  }
+  .radar-list { margin: 8px 0 0; padding-left: 22px; }
+  .radar-list li { margin: 8px 0; font-size: 13.5px; color: var(--text-dim); }
+  .radar-list b { color: var(--text); font-family: ui-monospace, monospace; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header class="briefing">
+    <div class="title">
+      <h1>Daily Market Briefing — Monday, May 25, 2026</h1>
+      <div class="meta">Generated May 25, 2026, 8:00 PM ET · US & India coverage</div>
+      <p class="summary">US cash markets closed for Memorial Day, but S&P 500 futures climbed ~1% and Nasdaq 100 futures ~1.4% on growing optimism that a US–Iran deal will reopen the Strait of Hormuz. Brent crude plunged nearly 6% to ~$96. India rallied hard: Nifty +1.32% to 24,031, Sensex +1.42% to 76,489, led by PSU and private banks, autos (Eicher Motors +6.5% on Q4), and Adani Enterprises +4.8%. The Iran-Hormuz situation is the single dominant theme — every major sector call below has to be read through that lens.</p>
+    </div>
+    <button class="theme-toggle" onclick="toggleTheme()">Toggle theme</button>
+  </header>
+
+  <!-- ============ PREDICTIONS ============ -->
+  <h2 class="section">Today's predictions</h2>
+  <div class="predictions-grid">
+
+    <div class="pred-column rise">
+      <div class="col-header">▲ Likely to rise today</div>
+
+      <h3 class="subsection">United States</h3>
+      
+<div class="pick">
+  <div class="pick-head">
+    <span><span class="ticker">DAL</span> <span class="company">Delta Air Lines</span> <span class="geo-tag">🌐 Geopolitical</span></span>
+    <span class="price">$XX <span class="change pos">futures +</span></span>
+    <span class="score-badge">+6</span>
+  </div>
+  <div class="reasoning">
+    News: +2. Brent dropped ~6% on Hormuz deal optimism; jet fuel relief is the single biggest swing factor for legacy carriers, and Delta CEO has called fuel costs "meaningful" to results. Q1 2026 already showed record $14.2B revenue and $1.2B free cash flow when prices were elevated.<br>
+    Geopolitical tilt: +3. Direct beneficiary of any Hormuz reopening — fuel is ~25-30% of cost base.<br>
+    Fundamentals: 0. Decent valuation but balance sheet still recovering from pandemic debt; premium-cabin mix is the real margin driver.<br>
+    Momentum: +1. Stock has been pressured 15-20% since the war started; news-driven mean reversion is now firmly in play.
+  </div>
+</div>
+
+<div class="pick">
+  <div class="pick-head">
+    <span><span class="ticker">UAL</span> <span class="company">United Airlines</span> <span class="geo-tag">🌐 Geopolitical</span></span>
+    <span class="price"><span class="change pos">futures pre-mkt +</span></span>
+    <span class="score-badge">+5</span>
+  </div>
+  <div class="reasoning">
+    News: +1. Same fuel-cost reversal thesis as DAL. CEO Scott Kirby flagged fuel impact on Q1 results.<br>
+    Geopolitical tilt: +3. Pure beneficiary of any Hormuz reopening — and was down sharply on the way up.<br>
+    Fundamentals: +1. UAL has been the most profitable US carrier on a per-mile basis with disciplined capacity.<br>
+    Momentum: 0. Off recent highs but base building; positive catalysts compound from here.
+  </div>
+</div>
+
+<div class="pick">
+  <div class="pick-head">
+    <span><span class="ticker">AAL</span> <span class="company">American Airlines</span> <span class="geo-tag">🌐 Geopolitical</span></span>
+    <span class="price"><span class="change pos">futures pre-mkt +</span></span>
+    <span class="score-badge">+4</span>
+  </div>
+  <div class="reasoning">
+    News: +1. Highest fuel sensitivity of the big three; pre-market trading was already +6% during prior Hormuz-deal optimism episodes.<br>
+    Geopolitical tilt: +3. Levered to fuel direction.<br>
+    Fundamentals: −1. Most levered balance sheet in the group; high beta to fuel cuts both ways.<br>
+    Momentum: +1. Sharply oversold; if a deal sticks, AAL outperforms peers on the bounce.
+  </div>
+</div>
+
+<div class="pick">
+  <div class="pick-head">
+    <span><span class="ticker">DELL</span> <span class="company">Dell Technologies</span></span>
+    <span class="price">52W high <span class="change pos">recent +15%</span></span>
+    <span class="score-badge">+4</span>
+  </div>
+  <div class="reasoning">
+    News: +3. Dell hit a record high on the back of strong Lenovo results from China that lifted the entire PC/server complex; reports earnings Wednesday after the bell.<br>
+    Geopolitical tilt: 0. Mostly insulated from Iran direct exposure.<br>
+    Fundamentals: 0. AI server momentum is real but valuation has expanded meaningfully off the lows.<br>
+    Momentum: +1. Stock entering earnings with positive momentum and rising estimates.
+  </div>
+</div>
+
+<div class="pick">
+  <div class="pick-head">
+    <span><span class="ticker">CRM</span> <span class="company">Salesforce</span></span>
+    <span class="price">earnings Tue close</span>
+    <span class="score-badge">+3</span>
+  </div>
+  <div class="reasoning">
+    News: +2. Reports Tuesday after the bell, the highest-stakes name on the calendar this week alongside Marvell and Snowflake.<br>
+    Geopolitical tilt: 0.<br>
+    Fundamentals: +1. Margin story has been the bull case; Agentforce monetization is the focus on the call.<br>
+    Momentum: 0. Range-bound for weeks waiting on this print.
+  </div>
+</div>
+
+<div class="pick">
+  <div class="pick-head">
+    <span><span class="ticker">SMCI</span> <span class="company">Super Micro Computer</span></span>
+    <span class="price"><span class="change neu">watch</span></span>
+    <span class="score-badge">+3</span>
+  </div>
+  <div class="reasoning">
+    News: +2. Caught in AI-spending tailwind from Nvidia's $80B buyback and 25x dividend hike on Friday, despite NVDA itself ending the session down 1.9%.<br>
+    Geopolitical tilt: 0. The AI infrastructure trade is largely orthogonal to Iran.<br>
+    Fundamentals: −1. Recent chip-smuggling scrutiny headlines from Nvidia CEO add headline risk.<br>
+    Momentum: +1. Has been a high-beta proxy for AI capex acceleration.
+  </div>
+</div>
+
+      <!-- Each pick is a <div class="pick">…</div> — example:
+        <div class="pick">
+          <div class="pick-head">
+            <span><span class="ticker">NVDA</span> <span class="company">NVIDIA Corp</span></span>
+            <span class="price">$XXX.XX <span class="change pos">+X.X%</span></span>
+            <span class="score-badge">+6</span>
+          </div>
+          <div class="reasoning">News: …  Fundamentals: …  Momentum: …</div>
+        </div>
+      -->
+
+      <h3 class="subsection">India</h3>
+      
+<div class="pick">
+  <div class="pick-head">
+    <span><span class="ticker">EICHERMOT.NS</span> <span class="company">Eicher Motors</span></span>
+    <span class="price">₹7,432 <span class="change pos">+6.45%</span></span>
+    <span class="score-badge">+5</span>
+  </div>
+  <div class="reasoning">
+    News: +4. Q4 FY26 PAT ₹1,520 cr (+12% YoY) on revenue +16% to ₹6,080 cr; FY26 PAT up 17% to ₹5,515 cr; final dividend raised 17% to ₹82/share. Royal Enfield crossed 1.2M annual units, holds 87% mid-size motorcycle share. Choice Equities target ₹7,650; ICICI Securities SOTP ₹8,550.<br>
+    Geopolitical tilt: 0. Domestic premium-discretionary story largely insulated from Hormuz outcome.<br>
+    Fundamentals: 0. P/E ~38 is rich at any other moment, but FY26 EBITDA margin expanded to 24.7% and execution is impeccable.<br>
+    Momentum: +1. New 52-week high; gap-up open held all session.
+  </div>
+</div>
+
+<div class="pick">
+  <div class="pick-head">
+    <span><span class="ticker">ADANIENT.NS</span> <span class="company">Adani Enterprises</span></span>
+    <span class="price">₹2,847 <span class="change pos">+4.77%</span></span>
+    <span class="score-badge">+5</span>
+  </div>
+  <div class="reasoning">
+    News: +3. Bernstein turned constructive ("Adani Group — The Hard-Bank"), citing easing US legal overhangs and improved overseas funding access; ~₹923 cr traded; group just took over Jaiprakash Associates via resolution plan implemented May 21.<br>
+    Geopolitical tilt: +1. Infrastructure conglomerate benefits from lower oil pass-through and easing inflation environment.<br>
+    Fundamentals: 0. P/E in the mid-40s, leverage still elevated but easing materially.<br>
+    Momentum: +1. Broke prior 52-week high of ₹2,800 set May 15.
+  </div>
+</div>
+
+<div class="pick">
+  <div class="pick-head">
+    <span><span class="ticker">LT.NS</span> <span class="company">Larsen & Toubro</span></span>
+    <span class="price"><span class="change pos">+2.76%</span></span>
+    <span class="score-badge">+4</span>
+  </div>
+  <div class="reasoning">
+    News: +2. India infrastructure proxy benefited from broad capex sentiment; defense and Middle East order book remains a structural tailwind.<br>
+    Geopolitical tilt: +1. Mixed — Middle East order book exposed to spending cycles, but India domestic capex is the dominant driver.<br>
+    Fundamentals: +1. EPS TTM ₹139 (consolidated), P/E ~28, market cap ~₹5.3 lakh cr — fairly valued given execution and book size.<br>
+    Momentum: 0. Above 200-DMA but not stretched.
+  </div>
+</div>
+
+<div class="pick">
+  <div class="pick-head">
+    <span><span class="ticker">BAJFINANCE.NS</span> <span class="company">Bajaj Finance</span></span>
+    <span class="price">₹944 <span class="change pos">+2.99%</span></span>
+    <span class="score-badge">+4</span>
+  </div>
+  <div class="reasoning">
+    News: +2. Broad-based NBFC + private bank rally led by easing inflation/oil hopes; both Nifty Private Bank and PSU Bank outperformed by 2.5%+.<br>
+    Geopolitical tilt: +1. Lower oil → tamer CPI → faster RBI rate-cut path → NBFC NIM tailwind.<br>
+    Fundamentals: +1. Quality franchise, well-capitalized; AUM growth steady; recent quarter showed continued strong disbursements.<br>
+    Momentum: 0. Range-bound but breaking out on volume.
+  </div>
+</div>
+
+<div class="pick">
+  <div class="pick-head">
+    <span><span class="ticker">TATAMOTORS-PV.NS</span> <span class="company">Tata Motors Passenger Vehicles</span></span>
+    <span class="price"><span class="change pos">+2.86%</span></span>
+    <span class="score-badge">+4</span>
+  </div>
+  <div class="reasoning">
+    News: +2. Hopes of improved Jaguar Land Rover profitability supporting the post-demerger PV stub; auto index rallied for 5th straight session.<br>
+    Geopolitical tilt: +1. Lower fuel costs and weaker USD positive for both domestic PV demand and JLR margin.<br>
+    Fundamentals: 0. JLR margins remain the swing variable; balance sheet much improved.<br>
+    Momentum: +1. Auto pack is the strongest sectoral leader of the week.
+  </div>
+</div>
+
+<div class="pick">
+  <div class="pick-head">
+    <span><span class="ticker">HDFCBANK.NS</span> <span class="company">HDFC Bank</span></span>
+    <span class="price"><span class="change pos">+2.69%</span></span>
+    <span class="score-badge">+3</span>
+  </div>
+  <div class="reasoning">
+    News: +1. Private Bank index +2%+; HDFC Bank was among Nifty 50 top gainers as ICICI and HDFC Bank led financials rally.<br>
+    Geopolitical tilt: +1. India's macro improves on every leg lower in oil — current account, INR, inflation.<br>
+    Fundamentals: +1. Largest private bank, healthy NIMs, asset quality remains best-in-class.<br>
+    Momentum: 0. Steady leadership.
+  </div>
+</div>
+
+    </div>
+
+    <div class="pred-column fall">
+      <div class="col-header">▼ Likely to fall today</div>
+
+      <h3 class="subsection">United States</h3>
+      
+<div class="pick">
+  <div class="pick-head">
+    <span><span class="ticker">XOM</span> <span class="company">ExxonMobil</span> <span class="geo-tag">🌐 Geopolitical</span></span>
+    <span class="price">$155 <span class="change neg">futures -</span></span>
+    <span class="score-badge">−4</span>
+  </div>
+  <div class="reasoning">
+    News: 0. No company-specific catalyst.<br>
+    Geopolitical tilt: −3. The mirror image of the airline call — Hormuz reopening unwinds the war premium in crude; XOM has been a major beneficiary of Brent's run from $61 (start of year) to $127 peak. Brent now back near $96 and falling.<br>
+    Fundamentals: −1. P/E now ~26 (vs 10-yr avg 19); EPS TTM $5.94; valuation expanded materially on the war premium and will compress.<br>
+    Momentum: 0. Off recent highs; the curve is the tell — backwardation is collapsing.
+  </div>
+</div>
+
+<div class="pick">
+  <div class="pick-head">
+    <span><span class="ticker">CVX</span> <span class="company">Chevron</span> <span class="geo-tag">🌐 Geopolitical</span></span>
+    <span class="price">$191 <span class="change neg">futures -</span></span>
+    <span class="score-badge">−4</span>
+  </div>
+  <div class="reasoning">
+    News: 0.<br>
+    Geopolitical tilt: −3. Same de-risking dynamic — direct upstream beneficiary now facing the unwind. Saudi pipeline disruption (~700kbpd) may also normalize on a comprehensive deal.<br>
+    Fundamentals: −1. P/E 33 vs 5-year avg ~18; EPS $5.76; clear valuation stretch.<br>
+    Momentum: 0.
+  </div>
+</div>
+
+<div class="pick">
+  <div class="pick-head">
+    <span><span class="ticker">LMT</span> <span class="company">Lockheed Martin</span> <span class="geo-tag">🌐 Geopolitical</span></span>
+    <span class="price">$533 <span class="change neg">futures -</span></span>
+    <span class="score-badge">−3</span>
+  </div>
+  <div class="reasoning">
+    News: −1. The defense complex has actually underperformed in recent weeks — ITA ETF down 12% since the war started — as earnings misses (LMT Q1 PAT and guidance both light) offset the geopolitical bid. Any sustained de-escalation closes the war-premium window further.<br>
+    Geopolitical tilt: −2. Pure-play beneficiary of escalation; runs in reverse on credible de-escalation.<br>
+    Fundamentals: 0. P/E ~25 vs 10-year avg ~21; FY25 EPS $21.56 was down 6% YoY despite the conflict — execution issues compound the call.<br>
+    Momentum: 0. Trying to base; another leg lower is plausible if a deal sticks.
+  </div>
+</div>
+
+<div class="pick">
+  <div class="pick-head">
+    <span><span class="ticker">NOC</span> <span class="company">Northrop Grumman</span> <span class="geo-tag">🌐 Geopolitical</span></span>
+    <span class="price"><span class="change neg">futures -</span></span>
+    <span class="score-badge">−3</span>
+  </div>
+  <div class="reasoning">
+    News: 0.<br>
+    Geopolitical tilt: −3. Same logic as LMT — de-escalation unwinds the premium.<br>
+    Fundamentals: 0.<br>
+    Momentum: 0.
+  </div>
+</div>
+
+<div class="pick">
+  <div class="pick-head">
+    <span><span class="ticker">RTX</span> <span class="company">RTX Corp (Raytheon)</span> <span class="geo-tag">🌐 Geopolitical</span></span>
+    <span class="price"><span class="change neg">futures -</span></span>
+    <span class="score-badge">−3</span>
+  </div>
+  <div class="reasoning">
+    News: −1. RTX fell 11% on Q1 guidance miss earlier in the cycle; weakest of the primes on the way up, will be weakest on the way down.<br>
+    Geopolitical tilt: −2.<br>
+    Fundamentals: 0.<br>
+    Momentum: −1. Already off highs.
+  </div>
+</div>
+
+
+      <h3 class="subsection">India</h3>
+      
+<div class="pick">
+  <div class="pick-head">
+    <span><span class="ticker">ONGC.NS</span> <span class="company">Oil & Natural Gas Corp</span> <span class="geo-tag">🌐 Geopolitical</span></span>
+    <span class="price"><span class="change neg">−1.76%</span></span>
+    <span class="score-badge">−4</span>
+  </div>
+  <div class="reasoning">
+    News: −1. Already the worst Nifty 50 performer today on falling crude.<br>
+    Geopolitical tilt: −3. Pure upstream play — earnings track Brent realizations almost 1:1.<br>
+    Fundamentals: 0. Valuation cheap (mid-single-digit P/E) but earnings will reset with the crude curve.<br>
+    Momentum: −1. Today's drop confirmed the direction.
+  </div>
+</div>
+
+<div class="pick">
+  <div class="pick-head">
+    <span><span class="ticker">HAL.NS</span> <span class="company">Hindustan Aeronautics</span> <span class="geo-tag">🌐 Geopolitical</span></span>
+    <span class="price"><span class="change neu">watch</span></span>
+    <span class="score-badge">−3</span>
+  </div>
+  <div class="reasoning">
+    News: 0.<br>
+    Geopolitical tilt: −2. Indian defense names have run hard on India-Pakistan border tensions plus broader regional escalation; a credible Iran de-escalation removes part of the bid even though India-specific drivers remain.<br>
+    Fundamentals: −1. P/E elevated after the run; near-term order book pace will be scrutinized.<br>
+    Momentum: 0.
+  </div>
+</div>
+
+<div class="pick">
+  <div class="pick-head">
+    <span><span class="ticker">BEL.NS</span> <span class="company">Bharat Electronics</span> <span class="geo-tag">🌐 Geopolitical</span></span>
+    <span class="price"><span class="change neu">watch</span></span>
+    <span class="score-badge">−3</span>
+  </div>
+  <div class="reasoning">
+    News: 0.<br>
+    Geopolitical tilt: −2. Same logic as HAL — bid compression in the defense complex.<br>
+    Fundamentals: −1. P/E ~45 leaves no room for disappointment if domestic procurement headlines slow.<br>
+    Momentum: 0. Near 52-week high — vulnerable to profit-taking.
+  </div>
+</div>
+
+<div class="pick">
+  <div class="pick-head">
+    <span><span class="ticker">RELIANCE.NS</span> <span class="company">Reliance Industries</span> <span class="geo-tag">🌐 Geopolitical</span></span>
+    <span class="price"><span class="change neg">mild</span></span>
+    <span class="score-badge">−3</span>
+  </div>
+  <div class="reasoning">
+    News: 0. Genuinely mixed today — not in top losers, but pressure exists.<br>
+    Geopolitical tilt: −1 to −2. Cross-currents: lower crude squeezes refining cracks; but cheaper Russian crude access (which the company has benefited from) gets less differentiated as global supply normalizes. Petrochemicals get a lift from cheaper feedstock.<br>
+    Fundamentals: 0.<br>
+    Momentum: 0. Acknowledge the call has more uncertainty than the others.
+  </div>
+</div>
+
+<div class="pick">
+  <div class="pick-head">
+    <span><span class="ticker">HINDALCO.NS</span> <span class="company">Hindalco Industries</span></span>
+    <span class="price"><span class="change neg">−0.92%</span></span>
+    <span class="score-badge">−3</span>
+  </div>
+  <div class="reasoning">
+    News: −1. Metals lagged broad rally; aluminum exposure compounds Novelis premium-product cycle concerns.<br>
+    Geopolitical tilt: −1. Lower energy is mixed for metals — input cost positive, but the safe-haven/commodity bid that supported metals on the way up unwinds.<br>
+    Fundamentals: 0.<br>
+    Momentum: −1. Lagged today's rally; relative weakness signal.
+  </div>
+</div>
+
+<div class="pick">
+  <div class="pick-head">
+    <span><span class="ticker">INFY.NS</span> <span class="company">Infosys</span></span>
+    <span class="price"><span class="change neg">−0.55%</span></span>
+    <span class="score-badge">−3</span>
+  </div>
+  <div class="reasoning">
+    News: −1. IT pack underperformed today; AI-led disruption concerns to outsourcing model continue to weigh.<br>
+    Geopolitical tilt: −1. Weaker USD on the Iran-deal news is a real headwind for Indian IT services (USD revenue, INR cost base means INR appreciation hurts).<br>
+    Fundamentals: 0. P/E ~25, reasonable but growth deceleration is the structural concern.<br>
+    Momentum: −1. Sector relative weakness.
+  </div>
+</div>
+
+    </div>
+  </div>
+
+  <!-- Optional on-the-radar block -->
+  
+<div class="radar-block">
+  <h3 class="subsection">On the radar (mid-score watch list)</h3>
+  <ul class="radar-list">
+    <li><b>NVDA</b> — fell 1.9% Friday despite +85% YoY revenue, $80B buyback, 25x dividend hike, and $91B Q2 guide. The reaction tells you Nvidia is now a "show me" stock at $5.2T cap; any China-licensing newsflow on H200 chips is the next catalyst either way.</li>
+    <li><b>SLB / HAL (Halliburton)</b> — oil services move with crude direction, but offshore project pipelines have longer lead times than the spot price, so the de-rating is partial rather than 1:1.</li>
+    <li><b>MAZDOCK.NS / GRSE.NS</b> — Indian shipbuilding has run on both defense and global merchant cycle; defense leg cools on de-escalation, but merchant tankers benefit from continued long-route shipping.</li>
+    <li><b>SUZLON.NS</b> — earnings tonight; renewable energy cap-ex cycle remains structurally intact regardless of Iran.</li>
+    <li><b>AAPL</b> — caught in cross-currents: weaker USD positive, but China-related supply chain headlines from NVDA CEO commentary apply here too.</li>
+  </ul>
+</div>
+
+
+  <!-- ============ GEOPOLITICAL IMPACT ============ -->
+  <h2 class="section">Geopolitical impact</h2>
+  <div class="geo-grid">
+    
+<article class="geo-card">
+  <h3 class="geo-theme">US–Iran framework deal nears, Strait of Hormuz reopening priced in</h3>
+  <p class="geo-context">
+    The single biggest market driver right now. Officials signaled the US and Iran are close to a framework that extends the ceasefire ~60 days while Washington lifts its blockade and Tehran reopens Hormuz. Brent crude fell nearly 6% Monday to ~$96 — down from a $127 spot peak and a $113+ Brent peak during the active conflict. Global stocks hit record highs in response: S&P 500 futures +1%, Nasdaq 100 futures +1.4%, MSCI ACWI at an all-time closing high, Nikkei 225 above 65,000 for the first time, India Nifty +1.3%. Key risk: Trump explicitly said negotiators should "not rush"; differences remain on Iran's nuclear program and Hormuz transit fees. A deal collapse could violently reverse all of this in a single session — every bullish position here carries that event risk.
+  </p>
+  <div class="geo-split">
+    <div class="geo-side winners">
+      <div class="geo-label">▲ Beneficiaries</div>
+      <ul>
+        <li><span class="geo-ticker">DAL, UAL, AAL, LUV</span> — fuel relief on a sustained Brent drop</li>
+        <li><span class="geo-ticker">INDIGO.NS</span> — fuel is ~30% of opex; INR appreciation a second tailwind</li>
+        <li><span class="geo-ticker">Broad equities</span> — S&P 500 futures already +1%; tech, consumer discretionary lead</li>
+        <li><span class="geo-ticker">ASIANPAINT.NS, MRF.NS</span> — chemicals/paints/tires get input-cost relief</li>
+        <li><span class="geo-ticker">Indian banks (HDFCBANK, ICICIBANK, PSU banks)</span> — lower oil → tamer CPI → faster RBI rate path</li>
+      </ul>
+    </div>
+    <div class="geo-side losers">
+      <div class="geo-label">▼ Victims</div>
+      <ul>
+        <li><span class="geo-ticker">XOM, CVX, COP, OXY</span> — upstream loses the war premium</li>
+        <li><span class="geo-ticker">ONGC.NS, OIL</span> — direct Brent-realization exposure</li>
+        <li><span class="geo-ticker">LMT, NOC, RTX, GD</span> — defense complex loses escalation bid</li>
+        <li><span class="geo-ticker">HAL.NS, BEL.NS, BDL.NS</span> — Indian defense pack has run hard, vulnerable to profit-taking</li>
+        <li><span class="geo-ticker">GLD, NEM</span> — safe-haven gold trade unwinds if deal sticks</li>
+      </ul>
+    </div>
+  </div>
+  <div class="geo-sources">
+    <a href="https://www.bloomberg.com/news/articles/2026-05-24/oil-dollar-slide-on-optimism-over-us-iran-deal-markets-wrap" target="_blank" rel="noopener">Bloomberg</a>
+    <a href="https://247wallst.com/investing/2026/05/25/sp-500-blasts-above-7500-as-iran-strait-deal-hopes-crush-oil-prices/" target="_blank" rel="noopener">24/7 Wall St.</a>
+    <a href="https://tradingeconomics.com/commodity/brent-crude-oil" target="_blank" rel="noopener">Trading Economics — Brent</a>
+  </div>
+</article>
+
+<article class="geo-card">
+  <h3 class="geo-theme">India macro tailwind: oil down, USD weaker, INR firmer</h3>
+  <p class="geo-context">
+    India imports ~85% of its crude, so any sustained drop in Brent is a direct positive for the current account, INR, broad inflation, and rate-cut speed. The dollar weakened against all G10 peers Monday. This is exactly the configuration that powers a domestic-led rally: banks (lower NIM headwinds and tamer CPI), autos (cheaper fuel for end demand), capital goods (lower input costs), and discretionary. The Nifty PSU Bank index jumped 2.9% today — a 4x amplification of the headline index move — which is the cleanest signal that the rates-and-rupee story is what the market is pricing.
+  </p>
+  <div class="geo-split">
+    <div class="geo-side winners">
+      <div class="geo-label">▲ Beneficiaries</div>
+      <ul>
+        <li><span class="geo-ticker">SBIN.NS, BANKBARODA.NS, PNB.NS</span> — PSU banks led with +2.9% index gain</li>
+        <li><span class="geo-ticker">HDFCBANK.NS, ICICIBANK.NS</span> — private banks gained ~2.5%</li>
+        <li><span class="geo-ticker">EICHERMOT.NS, TATAMOTORS-PV.NS</span> — auto pack rallied 5 sessions running</li>
+        <li><span class="geo-ticker">ADANIENT.NS, LT.NS</span> — capex / conglomerate proxies</li>
+      </ul>
+    </div>
+    <div class="geo-side losers">
+      <div class="geo-label">▼ Victims</div>
+      <ul>
+        <li><span class="geo-ticker">TCS.NS, INFY.NS, WIPRO.NS</span> — IT services hit by stronger INR (USD-revenue, INR-cost mismatch)</li>
+        <li><span class="geo-ticker">ONGC.NS, OIL</span> — upstream realization compression</li>
+      </ul>
+    </div>
+  </div>
+  <div class="geo-sources">
+    <a href="https://www.business-standard.com/markets/news/stock-market-live-may-25-nse-bse-sensex-today-nifty-gift-nifty-us-iran-talks-q4-results-ipo-share-market-126052500070_1.html" target="_blank" rel="noopener">Business Standard</a>
+    <a href="https://upstox.com/news/market-news/stocks/top-gainers-and-losers-may-25-eicher-motors-soars-over-6-adani-ent-up-5-max-health-down-2-check-list/article-194276/" target="_blank" rel="noopener">Upstox</a>
+  </div>
+</article>
+
+<article class="geo-card">
+  <h3 class="geo-theme">AI capex cycle remains the parallel theme, but priced in</h3>
+  <p class="geo-context">
+    Friday after-hours: Nvidia reported $81.6B revenue (+85% YoY), guided Q2 to $91B (+95% YoY, ahead of $87B consensus), and announced an $80B buyback plus a 25x dividend hike. The stock fell 1.9% Friday — a classic "good but not great enough" reaction at $5.2T market cap. The setup matters because Salesforce, Marvell, Dell, Snowflake, and Synopsys all report this week, and the tape will tell us whether the AI infrastructure trade can still surprise to the upside. Open question: China H200 licensing remains the biggest single variable for the back half of the year — Washington has cleared ~10 Chinese firms but no shipments have happened yet.
+  </p>
+  <div class="geo-split">
+    <div class="geo-side winners">
+      <div class="geo-label">▲ Beneficiaries</div>
+      <ul>
+        <li><span class="geo-ticker">DELL, SMCI</span> — direct AI-infrastructure proxies</li>
+        <li><span class="geo-ticker">AVGO, MRVL</span> — custom-silicon plays</li>
+        <li><span class="geo-ticker">PSTG, ANET</span> — AI networking / storage</li>
+      </ul>
+    </div>
+    <div class="geo-side losers">
+      <div class="geo-label">▼ Victims</div>
+      <ul>
+        <li><span class="geo-ticker">Indian IT services</span> — AI-disruption concern intensifies</li>
+        <li><span class="geo-ticker">Software with no AI moat</span> — multiple compression risk</li>
+      </ul>
+    </div>
+  </div>
+  <div class="geo-sources">
+    <a href="https://www.kiplinger.com/investing/live/nvidia-earnings-live-updates-and-commentary-may-2026" target="_blank" rel="noopener">Kiplinger</a>
+    <a href="https://www.morningstar.com/stocks/xnas/nvda/quote" target="_blank" rel="noopener">Morningstar</a>
+  </div>
+</article>
+
+    <!-- Each card:
+      <article class="geo-card">
+        <h3 class="geo-theme">Red Sea shipping disruption escalates</h3>
+        <p class="geo-context">Paraphrased one-paragraph context in your own words explaining what happened today and why it matters for markets.</p>
+        <div class="geo-split">
+          <div class="geo-side winners">
+            <div class="geo-label">▲ Beneficiaries</div>
+            <ul>
+              <li><span class="geo-ticker">XOM</span> — refining margins benefit from crude spike</li>
+              <li><span class="geo-ticker">STNG</span> — tanker rates surge on Cape rerouting</li>
+            </ul>
+          </div>
+          <div class="geo-side losers">
+            <div class="geo-label">▼ Victims</div>
+            <ul>
+              <li><span class="geo-ticker">DAL</span> — jet fuel cost rise pressures margins</li>
+              <li><span class="geo-ticker">INDIGO.NS</span> — fuel + INR weakness double hit</li>
+            </ul>
+          </div>
+        </div>
+        <div class="geo-sources">
+          <a href="https://reuters.com/…" target="_blank" rel="noopener">Reuters</a>
+          <a href="https://bloomberg.com/…" target="_blank" rel="noopener">Bloomberg</a>
+        </div>
+      </article>
+    -->
+  </div>
+
+  <!-- ============ US NEWS ============ -->
+  <h2 class="section">US market news</h2>
+  <div class="news-grid">
+    
+<article class="news-card">
+  <h3 class="news-head">US–Iran framework deal optimism powers global equity rally; futures jump on Memorial Day</h3>
+  <div class="news-meta">
+    <span class="ticker-chip">SPY</span>
+    <span class="ticker-chip">QQQ</span>
+    <span class="catalyst-chip pos">Geopolitical</span>
+    <span>Source: Bloomberg</span>
+  </div>
+  <p class="summary">S&P 500 futures climbed ~1% and Nasdaq 100 futures ~1.4% with US cash markets closed for Memorial Day, as officials signaled progress on a framework deal that would reopen the Strait of Hormuz. The dollar weakened against every G10 peer. MSCI ACWI hit an all-time closing high; Stoxx 600 closed at its highest since the war began.</p>
+  <a class="source" href="https://www.bloomberg.com/news/articles/2026-05-24/oil-dollar-slide-on-optimism-over-us-iran-deal-markets-wrap" target="_blank" rel="noopener">Read original →</a>
+</article>
+
+<article class="news-card">
+  <h3 class="news-head">Brent crude plunges nearly 6% to ~$96 on diplomatic progress</h3>
+  <div class="news-meta">
+    <span class="ticker-chip">XOM</span>
+    <span class="ticker-chip">CVX</span>
+    <span class="ticker-chip">DAL</span>
+    <span class="catalyst-chip neg">Macro shock (energy)</span>
+    <span>Source: Trading Economics</span>
+  </div>
+  <p class="summary">Brent traded below $98/barrel on hopes of a US–Iran agreement, the lowest level since April. Crude has roundtripped from $127 spot peak in March and ~$113 Brent peak. Energy majors face premium unwind; transports and chemicals get input relief.</p>
+  <a class="source" href="https://tradingeconomics.com/commodity/brent-crude-oil" target="_blank" rel="noopener">Read original →</a>
+</article>
+
+<article class="news-card">
+  <h3 class="news-head">Nvidia closed Friday down 1.9% despite $81.6B revenue and $80B buyback announcement</h3>
+  <div class="news-meta">
+    <span class="ticker-chip">NVDA</span>
+    <span class="ticker-chip">SMCI</span>
+    <span class="catalyst-chip pos">Earnings beat</span>
+    <span>Source: Morningstar / Yahoo Finance</span>
+  </div>
+  <p class="summary">Nvidia reported fiscal Q1 revenue of $81.6 billion (+85% YoY), comfortably ahead of $78 billion guidance, and guided Q2 to $91 billion vs $87.2B consensus. The board also approved an $80 billion buyback and lifted the dividend 25-fold. Stock fell on the print as $5.2T market cap leaves little room for surprise; analysts see China H200 chip licensing as the next major catalyst.</p>
+  <a class="source" href="https://www.morningstar.com/stocks/xnas/nvda/quote" target="_blank" rel="noopener">Read original →</a>
+</article>
+
+<article class="news-card">
+  <h3 class="news-head">Dell hits record high on Lenovo readthrough; reports earnings Wednesday</h3>
+  <div class="news-meta">
+    <span class="ticker-chip">DELL</span>
+    <span class="ticker-chip">HPQ</span>
+    <span class="catalyst-chip pos">Sector tailwind</span>
+    <span>Source: Trading Economics</span>
+  </div>
+  <p class="summary">Strong Lenovo results out of China lifted the US PC/server complex; Dell touched an all-time high, HP climbed more than 15%. The Wednesday print is the highest-stakes name on this week's calendar after Salesforce on Tuesday.</p>
+  <a class="source" href="https://tradingeconomics.com/united-states/stock-market" target="_blank" rel="noopener">Read original →</a>
+</article>
+
+<article class="news-card">
+  <h3 class="news-head">This week's catalysts: Salesforce, Dell, Marvell, Snowflake, Synopsys, plus PCE inflation</h3>
+  <div class="news-meta">
+    <span class="ticker-chip">CRM</span>
+    <span class="ticker-chip">MRVL</span>
+    <span class="ticker-chip">SNOW</span>
+    <span class="ticker-chip">SNPS</span>
+    <span class="catalyst-chip neu">Earnings + macro</span>
+    <span>Source: Schwab</span>
+  </div>
+  <p class="summary">Tuesday: AutoZone, Zscaler; consumer confidence print. Wednesday: Dell, Marvell, Salesforce, Synopsys, Snowflake, plus April new home sales. Friday: April PCE inflation — the Fed's preferred gauge — followed by GDP and personal income data. New Fed Chair Warsh expected to be sworn in this week.</p>
+  <a class="source" href="https://www.schwab.com/learn/story/stock-market-update-open" target="_blank" rel="noopener">Read original →</a>
+</article>
+
+<article class="news-card">
+  <h3 class="news-head">Defense complex has underperformed since Iran war began despite the obvious catalyst</h3>
+  <div class="news-meta">
+    <span class="ticker-chip">LMT</span>
+    <span class="ticker-chip">RTX</span>
+    <span class="ticker-chip">NOC</span>
+    <span class="catalyst-chip neg">Earnings miss + geopolitical</span>
+    <span>Source: CNBC</span>
+  </div>
+  <p class="summary">The iShares Aerospace & Defense ETF (ITA) has fallen ~12% since the Middle East conflict began escalating in March, while the S&P 500 added 3.5% over the same window. Earnings misses (RTX -11%, LMT -13% in their respective recent prints) overwhelmed the geopolitical bid. Any sustained Iran de-escalation removes the remaining cushion.</p>
+  <a class="source" href="https://www.cnbc.com/2026/04/28/defense-stocks-have-floundered-since-the-iran-war-began-heres-why.html" target="_blank" rel="noopener">Read original →</a>
+</article>
+
+<article class="news-card">
+  <h3 class="news-head">S&P 500 on track for eighth winning week — longest streak since 2023</h3>
+  <div class="news-meta">
+    <span class="ticker-chip">SPY</span>
+    <span class="catalyst-chip pos">Index</span>
+    <span>Source: CNBC</span>
+  </div>
+  <p class="summary">The S&P 500 closed Friday at 7,547, up 0.4%, putting it on pace for its eighth consecutive weekly advance — the longest run since the nine-week streak that ended December 2023. Dow added 294 points to a fresh intraday record. Bulls cite easing oil + corporate AI returns; bears note the 2.1% average S&P loss in midterm-year Junes and narrowing breadth.</p>
+  <a class="source" href="https://www.cnbc.com/2026/05/22/stock-market-next-week-outlook-for-may-25-29-2026.html" target="_blank" rel="noopener">Read original →</a>
+</article>
+
+    <!-- Each card:
+      <article class="news-card">
+        <h3 class="news-head">Paraphrased headline in your own words</h3>
+        <div class="news-meta">
+          <span class="ticker-chip">AAPL</span>
+          <span class="catalyst-chip pos">Earnings beat</span>
+          <span>Source: Reuters</span>
+        </div>
+        <p class="summary">2-3 sentence summary, fully paraphrased.</p>
+        <a class="source" href="https://…" target="_blank" rel="noopener">Read original →</a>
+      </article>
+    -->
+  </div>
+
+  <!-- ============ INDIA NEWS ============ -->
+  <h2 class="section">India market news</h2>
+  <div class="news-grid">
+    
+<article class="news-card">
+  <h3 class="news-head">Sensex jumps 1,074 points, Nifty reclaims 24,000 as Iran-deal optimism powers broad rally</h3>
+  <div class="news-meta">
+    <span class="ticker-chip">NIFTY</span>
+    <span class="ticker-chip">SENSEX</span>
+    <span class="catalyst-chip pos">Index</span>
+    <span>Source: Business Standard</span>
+  </div>
+  <p class="summary">Nifty 50 closed +312 points (+1.32%) at 24,031.70; Sensex +1,074 (+1.42%) at 76,488.96. Nifty MidCap and SmallCap added 0.94% and 1.37% respectively. PSU Bank, Private Bank, and Nifty Bank led; IT, FMCG and Healthcare lagged. Trump's "constructive" comments on Iran talks were the catalyst.</p>
+  <a class="source" href="https://www.business-standard.com/markets/news/stock-market-live-may-25-nse-bse-sensex-today-nifty-gift-nifty-us-iran-talks-q4-results-ipo-share-market-126052500070_1.html" target="_blank" rel="noopener">Read original →</a>
+</article>
+
+<article class="news-card">
+  <h3 class="news-head">Eicher Motors surges 6.45% on strong Q4 FY26; Royal Enfield crosses 1.2M annual units</h3>
+  <div class="news-meta">
+    <span class="ticker-chip">EICHERMOT.NS</span>
+    <span class="catalyst-chip pos">Earnings beat</span>
+    <span>Source: Groww / Business Standard</span>
+  </div>
+  <p class="summary">Eicher posted Q4 consolidated PAT of ₹1,520 crore (+12% YoY) on revenue of ₹6,080 crore (+16%). EBITDA margin expanded to 24.7%. FY26 revenue +24% to ₹23,408 crore; final dividend lifted to ₹82/share (from ₹70). Royal Enfield held 87% market share in the 200cc+ mid-size motorcycle segment. ICICI Securities SOTP value of ₹8,550 implies further upside.</p>
+  <a class="source" href="https://groww.in/blog/eicher-motors-q4-fy26-results" target="_blank" rel="noopener">Read original →</a>
+</article>
+
+<article class="news-card">
+  <h3 class="news-head">Adani Enterprises +4.77% to ₹2,847 on Bernstein constructive turn; group takes over Jaiprakash Associates</h3>
+  <div class="news-meta">
+    <span class="ticker-chip">ADANIENT.NS</span>
+    <span class="catalyst-chip pos">Broker upgrade + corporate action</span>
+    <span>Source: Business Standard</span>
+  </div>
+  <p class="summary">Bernstein turned positive in a note titled "Adani group — The Hard-Bank," citing easing US legal overhangs, lower leverage concerns and restored overseas funding access. Adani also implemented its approved resolution plan to acquire Jaiprakash Associates on May 21. Over ₹923 crore of stock traded; new 52-week high above prior ₹2,800 peak from May 15.</p>
+  <a class="source" href="https://www.business-standard.com/markets/news/adani-ent-bajaj-auto-voda-idea-16-more-bse-500-stocks-hit-52-week-highs-126052500791_1.html" target="_blank" rel="noopener">Read original →</a>
+</article>
+
+<article class="news-card">
+  <h3 class="news-head">PSU Bank Index jumps 2.9% as oil drop fuels rate-cut hopes</h3>
+  <div class="news-meta">
+    <span class="ticker-chip">SBIN.NS</span>
+    <span class="ticker-chip">BANKBARODA.NS</span>
+    <span class="ticker-chip">PNB.NS</span>
+    <span class="catalyst-chip pos">Macro tailwind</span>
+    <span>Source: ICICI Direct</span>
+  </div>
+  <p class="summary">The Nifty PSU Bank index outperformed today, gaining 2.9% — roughly double the headline index move. With India importing 85% of its crude, falling Brent eases the inflation outlook and accelerates the RBI's rate-cut path. Private Bank index also outperformed; HDFC Bank, ICICI Bank, IndusInd Bank led financials.</p>
+  <a class="source" href="https://www.icicidirect.com/share-market-today" target="_blank" rel="noopener">Read original →</a>
+</article>
+
+<article class="news-card">
+  <h3 class="news-head">19 BSE 500 names hit 52-week highs intraday: Adani Enterprises, Bajaj Auto, Voda Idea among them</h3>
+  <div class="news-meta">
+    <span class="ticker-chip">ADANIENT.NS</span>
+    <span class="ticker-chip">BAJAJ-AUTO.NS</span>
+    <span class="ticker-chip">IDEA.NS</span>
+    <span class="catalyst-chip pos">Breakout</span>
+    <span>Source: Business Standard</span>
+  </div>
+  <p class="summary">Nineteen BSE 500 stocks hit new 52-week highs intraday Monday, including Adani Enterprises, Bajaj Auto, Vodafone Idea, Angel One, Gland Pharma, HFCL, Timken India, and Varun Beverages. Ten — Hindalco, KEI, Polycab, Apollo Hospitals, Anand Rathi Wealth, GE Vernova T&D, Manappuram Finance, Navin Fluorochemicals, Torrent Pharma, JB Chemicals — touched lifetime highs.</p>
+  <a class="source" href="https://www.business-standard.com/markets/news/adani-ent-bajaj-auto-voda-idea-16-more-bse-500-stocks-hit-52-week-highs-126052500791_1.html" target="_blank" rel="noopener">Read original →</a>
+</article>
+
+<article class="news-card">
+  <h3 class="news-head">ONGC tops Nifty losers as crude slides; energy upstream feels the unwind</h3>
+  <div class="news-meta">
+    <span class="ticker-chip">ONGC.NS</span>
+    <span class="catalyst-chip neg">Sector headwind</span>
+    <span>Source: Upstox</span>
+  </div>
+  <p class="summary">Oil & Natural Gas Corporation closed -1.76%, the second-largest Nifty 50 loser, as Brent fell sharply on Iran-deal hopes. Upstream realizations track crude almost 1:1. Other laggards: Max Healthcare -2.2%, Hindalco -0.9%, Infosys -0.55%, Bajaj Auto -0.43%.</p>
+  <a class="source" href="https://upstox.com/news/market-news/stocks/top-gainers-and-losers-may-25-eicher-motors-soars-over-6-adani-ent-up-5-max-health-down-2-check-list/article-194276/" target="_blank" rel="noopener">Read original →</a>
+</article>
+
+<article class="news-card">
+  <h3 class="news-head">FII outflow continued Friday but DII buying offset; Q4 earnings season winding down</h3>
+  <div class="news-meta">
+    <span class="ticker-chip">NIFTY</span>
+    <span class="catalyst-chip neu">Flows</span>
+    <span>Source: Upstox</span>
+  </div>
+  <p class="summary">Foreign institutional investors sold ₹4,440 crore on Friday while domestic institutions bought ₹6,003 crore on a net basis. Q4 FY26 results out today include Container Corp, Suzlon, Rail Vikas Nigam, Pine Labs, NBCC, Hitachi Energy. Yaashvi Jewellers IPO opens; Bio Medica, Autofurnish and Q-Line Biotec IPOs enter final day.</p>
+  <a class="source" href="https://www.business-standard.com/markets/news/stock-market-live-may-25-nse-bse-sensex-today-nifty-gift-nifty-us-iran-talks-q4-results-ipo-share-market-126052500070_1.html" target="_blank" rel="noopener">Read original →</a>
+</article>
+
+  </div>
+
+  <!-- ============ FUNDAMENTALS APPENDIX ============ -->
+  <h2 class="section">Fundamentals appendix</h2>
+  <div class="table-wrap">
+    <table class="fundamentals" id="fundamentals-table">
+      <thead>
+        <tr>
+          <th data-col="ticker">Ticker</th>
+          <th data-col="company">Company</th>
+          <th data-col="market">Mkt</th>
+          <th data-col="price" data-numeric="true">Price</th>
+          <th data-col="change" data-numeric="true">Chg %</th>
+          <th data-col="mcap" data-numeric="true">Mkt Cap</th>
+          <th data-col="pe" data-numeric="true">P/E</th>
+          <th data-col="pb" data-numeric="true">P/B</th>
+          <th data-col="eps" data-numeric="true">EPS</th>
+          <th data-col="rev" data-numeric="true">Revenue</th>
+          <th data-col="ni" data-numeric="true">Net Inc.</th>
+          <th data-col="de" data-numeric="true">D/E</th>
+          <th data-col="margin" data-numeric="true">Margin</th>
+          <th data-col="roe" data-numeric="true">ROE</th>
+          <th data-col="52w" data-numeric="false">52W Range</th>
+          <th data-col="sector">Sector</th>
+        </tr>
+      </thead>
+      <tbody>
+        
+<tr>
+  <td class="ticker">EICHERMOT.NS</td><td>Eicher Motors</td><td>IN</td>
+  <td class="num">₹7,432</td><td class="num">+6.45%</td><td class="num">₹2.04L cr</td>
+  <td class="num">38</td><td class="num">10.8</td><td class="num">₹201</td>
+  <td class="num">₹23,408 cr</td><td class="num">₹5,515 cr</td>
+  <td class="num">0.05</td><td class="num">23.6%</td><td class="num">28%</td>
+  <td>₹3,900–₹7,432</td><td>Auto / Motorcycles</td>
+</tr>
+<tr>
+  <td class="ticker">ADANIENT.NS</td><td>Adani Enterprises</td><td>IN</td>
+  <td class="num">₹2,847</td><td class="num">+4.77%</td><td class="num">₹3.28L cr</td>
+  <td class="num">46</td><td class="num">5.9</td><td class="num">₹62</td>
+  <td class="num">₹98,000 cr</td><td class="num">₹7,099 cr</td>
+  <td class="num">1.83</td><td class="num">7.2%</td><td class="num">14%</td>
+  <td>₹2,025–₹2,859</td><td>Diversified / Infra</td>
+</tr>
+<tr>
+  <td class="ticker">LT.NS</td><td>Larsen & Toubro</td><td>IN</td>
+  <td class="num">₹3,825</td><td class="num">+2.76%</td><td class="num">₹5.26L cr</td>
+  <td class="num">28</td><td class="num">5.4</td><td class="num">₹139</td>
+  <td class="num">₹2.60L cr</td><td class="num">₹15,037 cr</td>
+  <td class="num">1.35</td><td class="num">5.8%</td><td class="num">15%</td>
+  <td>₹2,968–₹4,194</td><td>Engineering / EPC</td>
+</tr>
+<tr>
+  <td class="ticker">BAJFINANCE.NS</td><td>Bajaj Finance</td><td>IN</td>
+  <td class="num">₹944</td><td class="num">+2.99%</td><td class="num">₹5.84L cr</td>
+  <td class="num">29</td><td class="num">5.6</td><td class="num">₹32</td>
+  <td class="num">₹60,000 cr</td><td class="num">₹16,663 cr</td>
+  <td class="num">3.81</td><td class="num">26%</td><td class="num">19%</td>
+  <td>₹650–₹964</td><td>NBFC / Financials</td>
+</tr>
+<tr>
+  <td class="ticker">HDFCBANK.NS</td><td>HDFC Bank</td><td>IN</td>
+  <td class="num">₹2,015</td><td class="num">+2.69%</td><td class="num">₹15.4L cr</td>
+  <td class="num">20</td><td class="num">2.8</td><td class="num">₹100</td>
+  <td class="num">₹4.10L cr</td><td class="num">₹67,000 cr</td>
+  <td class="num">7.5</td><td class="num">16%</td><td class="num">17%</td>
+  <td>₹1,425–₹2,030</td><td>Private Bank</td>
+</tr>
+<tr>
+  <td class="ticker">ONGC.NS</td><td>Oil & Natural Gas Corp</td><td>IN</td>
+  <td class="num">₹248</td><td class="num">−1.76%</td><td class="num">₹3.12L cr</td>
+  <td class="num">7.2</td><td class="num">1.0</td><td class="num">₹34</td>
+  <td class="num">₹6.45L cr</td><td class="num">₹42,000 cr</td>
+  <td class="num">0.58</td><td class="num">6.5%</td><td class="num">14%</td>
+  <td>₹205–₹345</td><td>Energy / Upstream</td>
+</tr>
+<tr>
+  <td class="ticker">RELIANCE.NS</td><td>Reliance Industries</td><td>IN</td>
+  <td class="num">₹1,478</td><td class="num">+0.6%</td><td class="num">₹19.9L cr</td>
+  <td class="num">26</td><td class="num">2.4</td><td class="num">₹57</td>
+  <td class="num">₹10.0L cr</td><td class="num">₹79,000 cr</td>
+  <td class="num">0.62</td><td class="num">7.9%</td><td class="num">9%</td>
+  <td>₹1,114–₹1,608</td><td>Diversified / Energy</td>
+</tr>
+<tr>
+  <td class="ticker">INFY.NS</td><td>Infosys</td><td>IN</td>
+  <td class="num">₹1,640</td><td class="num">−0.55%</td><td class="num">₹6.80L cr</td>
+  <td class="num">25</td><td class="num">7.5</td><td class="num">₹66</td>
+  <td class="num">₹1.61L cr</td><td class="num">₹27,400 cr</td>
+  <td class="num">0.10</td><td class="num">17%</td><td class="num">31%</td>
+  <td>₹1,358–₹1,990</td><td>IT Services</td>
+</tr>
+<tr>
+  <td class="ticker">HINDALCO.NS</td><td>Hindalco Industries</td><td>IN</td>
+  <td class="num">₹655</td><td class="num">−0.92%</td><td class="num">₹1.47L cr</td>
+  <td class="num">11</td><td class="num">1.6</td><td class="num">₹59</td>
+  <td class="num">₹2.26L cr</td><td class="num">₹13,500 cr</td>
+  <td class="num">0.65</td><td class="num">6%</td><td class="num">14%</td>
+  <td>₹546–₹767</td><td>Metals / Aluminum</td>
+</tr>
+<tr>
+  <td class="ticker">HAL.NS</td><td>Hindustan Aeronautics</td><td>IN</td>
+  <td class="num">₹4,650</td><td class="num">+1.1%</td><td class="num">₹3.11L cr</td>
+  <td class="num">36</td><td class="num">10.5</td><td class="num">₹130</td>
+  <td class="num">₹30,400 cr</td><td class="num">₹8,400 cr</td>
+  <td class="num">0.02</td><td class="num">28%</td><td class="num">30%</td>
+  <td>₹3,046–₹5,675</td><td>Defense / Aerospace</td>
+</tr>
+<tr>
+  <td class="ticker">BEL.NS</td><td>Bharat Electronics</td><td>IN</td>
+  <td class="num">₹318</td><td class="num">+0.8%</td><td class="num">₹2.32L cr</td>
+  <td class="num">45</td><td class="num">11.0</td><td class="num">₹7.1</td>
+  <td class="num">₹23,000 cr</td><td class="num">₹4,900 cr</td>
+  <td class="num">0.00</td><td class="num">21%</td><td class="num">25%</td>
+  <td>₹240–₹340</td><td>Defense / Electronics</td>
+</tr>
+<tr>
+  <td class="ticker">TATAMOTORS-PV.NS</td><td>Tata Motors PV</td><td>IN</td>
+  <td class="num">₹730</td><td class="num">+2.86%</td><td class="num">₹2.32L cr</td>
+  <td class="num">16</td><td class="num">3.5</td><td class="num">₹45</td>
+  <td class="num">₹4.43L cr</td><td class="num">₹28,000 cr</td>
+  <td class="num">0.40</td><td class="num">6.3%</td><td class="num">22%</td>
+  <td>₹535–₹775</td><td>Auto / Passenger</td>
+</tr>
+<tr>
+  <td class="ticker">NVDA</td><td>NVIDIA</td><td>US</td>
+  <td class="num">$215.33</td><td class="num">−1.9%</td><td class="num">$5.22T</td>
+  <td class="num">52</td><td class="num">40</td><td class="num">$4.14</td>
+  <td class="num">$220B</td><td class="num">$120B</td>
+  <td class="num">0.12</td><td class="num">55%</td><td class="num">115%</td>
+  <td>$98–$225</td><td>Semiconductors / AI</td>
+</tr>
+<tr>
+  <td class="ticker">XOM</td><td>ExxonMobil</td><td>US</td>
+  <td class="num">$155</td><td class="num">futures −</td><td class="num">$674B</td>
+  <td class="num">26.1</td><td class="num">2.47</td><td class="num">$5.94</td>
+  <td class="num">$340B</td><td class="num">$30B</td>
+  <td class="num">0.20</td><td class="num">8.9%</td><td class="num">11%</td>
+  <td>$101–$176</td><td>Energy / Integrated</td>
+</tr>
+<tr>
+  <td class="ticker">CVX</td><td>Chevron</td><td>US</td>
+  <td class="num">$191</td><td class="num">futures −</td><td class="num">$340B</td>
+  <td class="num">33.2</td><td class="num">1.85</td><td class="num">$5.76</td>
+  <td class="num">$195B</td><td class="num">$10.3B</td>
+  <td class="num">0.18</td><td class="num">5.3%</td><td class="num">7%</td>
+  <td>$130–$220</td><td>Energy / Integrated</td>
+</tr>
+<tr>
+  <td class="ticker">LMT</td><td>Lockheed Martin</td><td>US</td>
+  <td class="num">$533</td><td class="num">futures −</td><td class="num">$123B</td>
+  <td class="num">24.8</td><td class="num">16</td><td class="num">$21.56</td>
+  <td class="num">$75B</td><td class="num">$5.02B</td>
+  <td class="num">1.80</td><td class="num">6.7%</td><td class="num">60%</td>
+  <td>$410–$692</td><td>Defense / Aerospace</td>
+</tr>
+<tr>
+  <td class="ticker">RTX</td><td>RTX Corp</td><td>US</td>
+  <td class="num">$130</td><td class="num">futures −</td><td class="num">$172B</td>
+  <td class="num">28</td><td class="num">2.5</td><td class="num">$4.65</td>
+  <td class="num">$82B</td><td class="num">$6.2B</td>
+  <td class="num">0.65</td><td class="num">7.5%</td><td class="num">9%</td>
+  <td>$98–$148</td><td>Defense / Aerospace</td>
+</tr>
+<tr>
+  <td class="ticker">NOC</td><td>Northrop Grumman</td><td>US</td>
+  <td class="num">$510</td><td class="num">futures −</td><td class="num">$73B</td>
+  <td class="num">21</td><td class="num">3.5</td><td class="num">$24.30</td>
+  <td class="num">$42B</td><td class="num">$3.5B</td>
+  <td class="num">0.85</td><td class="num">8.3%</td><td class="num">17%</td>
+  <td>$430–$555</td><td>Defense / Aerospace</td>
+</tr>
+<tr>
+  <td class="ticker">DAL</td><td>Delta Air Lines</td><td>US</td>
+  <td class="num">$48</td><td class="num">futures +</td><td class="num">$31B</td>
+  <td class="num">7.8</td><td class="num">2.4</td><td class="num">$6.15</td>
+  <td class="num">$62B</td><td class="num">$4.0B</td>
+  <td class="num">2.85</td><td class="num">6.5%</td><td class="num">31%</td>
+  <td>$38–$70</td><td>Airlines</td>
+</tr>
+<tr>
+  <td class="ticker">UAL</td><td>United Airlines</td><td>US</td>
+  <td class="num">$70</td><td class="num">futures +</td><td class="num">$23B</td>
+  <td class="num">5.8</td><td class="num">2.0</td><td class="num">$12.05</td>
+  <td class="num">$57B</td><td class="num">$3.9B</td>
+  <td class="num">2.40</td><td class="num">6.8%</td><td class="num">32%</td>
+  <td>$48–$110</td><td>Airlines</td>
+</tr>
+<tr>
+  <td class="ticker">AAL</td><td>American Airlines</td><td>US</td>
+  <td class="num">$11.5</td><td class="num">futures +</td><td class="num">$7.5B</td>
+  <td class="num">11.8</td><td class="num">—</td><td class="num">$0.97</td>
+  <td class="num">$54B</td><td class="num">$0.6B</td>
+  <td class="num">very high</td><td class="num">1.2%</td><td class="num">—</td>
+  <td>$8.5–$18.5</td><td>Airlines</td>
+</tr>
+<tr>
+  <td class="ticker">DELL</td><td>Dell Technologies</td><td>US</td>
+  <td class="num">$155</td><td class="num">recent +15%</td><td class="num">$110B</td>
+  <td class="num">22</td><td class="num">—</td><td class="num">$7.05</td>
+  <td class="num">$98B</td><td class="num">$5.0B</td>
+  <td class="num">high</td><td class="num">5.1%</td><td class="num">—</td>
+  <td>$85–$157</td><td>Hardware / AI Servers</td>
+</tr>
+<tr>
+  <td class="ticker">CRM</td><td>Salesforce</td><td>US</td>
+  <td class="num">$280</td><td class="num">flat</td><td class="num">$268B</td>
+  <td class="num">42</td><td class="num">5.0</td><td class="num">$6.65</td>
+  <td class="num">$38B</td><td class="num">$6.4B</td>
+  <td class="num">0.18</td><td class="num">17%</td><td class="num">10%</td>
+  <td>$210–$370</td><td>Software / Enterprise</td>
+</tr>
+
+        <!-- Each row:
+          <tr>
+            <td class="ticker">AAPL</td>
+            <td>Apple Inc.</td>
+            <td>US</td>
+            <td class="num">$XXX.XX</td>
+            <td class="num">+X.X%</td>
+            <td class="num">$X.XT</td>
+            <td class="num">XX.X</td>
+            <td class="num">XX.X</td>
+            <td class="num">$X.XX</td>
+            <td class="num">$XXXb</td>
+            <td class="num">$XXb</td>
+            <td class="num">X.XX</td>
+            <td class="num">XX%</td>
+            <td class="num">XX%</td>
+            <td>$XXX–$XXX</td>
+            <td>Technology</td>
+          </tr>
+        -->
+      </tbody>
+    </table>
+  </div>
+
+  <footer class="disclaimer">
+    <strong>Disclaimer:</strong> This report is generated from public news sources and financial data and is for informational purposes only. It is not investment advice. Stock predictions are inherently uncertain; geopolitical events are particularly difficult to forecast; do your own research and consult a licensed financial advisor before making investment decisions.
+  </footer>
+
+</div>
+
+<script>
+  // Theme toggle
+  function toggleTheme() {
+    const html = document.documentElement;
+    html.setAttribute('data-theme', html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+  }
+
+  // Sortable fundamentals table
+  (function() {
+    const table = document.getElementById('fundamentals-table');
+    if (!table) return;
+    const headers = table.querySelectorAll('th');
+    const tbody = table.querySelector('tbody');
+    let sortState = { col: null, asc: true };
+
+    headers.forEach((th, idx) => {
+      const indicator = document.createElement('span');
+      indicator.className = 'sort-indicator';
+      indicator.textContent = '↕';
+      th.appendChild(indicator);
+      th.addEventListener('click', () => sortBy(idx, th.dataset.numeric === 'true'));
+    });
+
+    function parseNum(s) {
+      if (s == null) return -Infinity;
+      const cleaned = String(s).replace(/[%,$₹+]/g, '').trim();
+      // Handle suffixes: T, B, M, K, cr (crore), L (lakh)
+      const match = cleaned.match(/^(-?[\d.]+)\s*([TBMKtbmk]|cr|Cr|CR|L|l)?/);
+      if (!match) return -Infinity;
+      let n = parseFloat(match[1]);
+      const suf = (match[2] || '').toLowerCase();
+      if (suf === 't') n *= 1e12;
+      else if (suf === 'b') n *= 1e9;
+      else if (suf === 'm') n *= 1e6;
+      else if (suf === 'k') n *= 1e3;
+      else if (suf === 'cr') n *= 1e7;
+      else if (suf === 'l') n *= 1e5;
+      return isNaN(n) ? -Infinity : n;
+    }
+
+    function sortBy(colIdx, numeric) {
+      const rows = Array.from(tbody.querySelectorAll('tr'));
+      const asc = sortState.col === colIdx ? !sortState.asc : true;
+      rows.sort((a, b) => {
+        const av = a.children[colIdx]?.textContent.trim() ?? '';
+        const bv = b.children[colIdx]?.textContent.trim() ?? '';
+        if (numeric) {
+          return (parseNum(av) - parseNum(bv)) * (asc ? 1 : -1);
+        }
+        return av.localeCompare(bv) * (asc ? 1 : -1);
+      });
+      rows.forEach(r => tbody.appendChild(r));
+      sortState = { col: colIdx, asc };
+      headers.forEach((h, i) => {
+        const ind = h.querySelector('.sort-indicator');
+        if (i === colIdx) ind.textContent = asc ? '↑' : '↓';
+        else ind.textContent = '↕';
+      });
+    }
+  })();
+</script>
+
+</body>
+</html>
